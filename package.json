@@ -4,7 +4,11 @@
   "description": "project 2 in udacity advanced full-stack web development nanodegree",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "tsc && node dist/index.js",
+    "dev": "nodemon src/index.ts",
+    "lint": "eslint src/*.ts",
+    "lint-f": "eslint src/*.ts --fix",
+    "test": "db-migrate --env test reset && tsc && set ENV=test && db-migrate --env test up && jasmine"
   },
   "repository": {
     "type": "git",
@@ -17,9 +21,20 @@
   },
   "homepage": "https://github.com/as3ad222/Storefront-API#readme",
   "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
     "@types/express": "^4.17.13",
+    "@types/jasmine": "^4.0.3",
+    "@types/jsonwebtoken": "^8.5.8",
     "@types/node": "^17.0.22",
+    "@types/pg": "^8.6.5",
+    "@types/supertest": "^2.0.12",
+    "@typescript-eslint/eslint-plugin": "^5.20.0",
+    "@typescript-eslint/parser": "^5.20.0",
+    "db-migrate": "^0.11.13",
+    "db-migrate-pg": "^1.2.2",
     "eslint": "^8.13.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.0.0",
     "jasmine": "^4.1.0",
     "jasmine-spec-reporter": "^7.0.0",
     "nodemon": "^2.0.15",
