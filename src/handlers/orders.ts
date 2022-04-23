@@ -1,8 +1,8 @@
 import express from 'express';
-import { Order, OrederStore } from '../models/orders';
+import { Order, OrderStore } from '../models/orders';
 import Authorize from "../authorize/jwtAuh";
 
-const store = new OrederStore();
+const store = new OrderStore();
 
 const index = async (req: express.Request, res: express.Response) => {
     try{

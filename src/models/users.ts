@@ -10,7 +10,7 @@ export type Users = {
 };
 
 const pepper = process.env.BCRYPT_PASSWORD;
-const SALT_ROUNDS = process.env.SALT_ROUNDS;
+const salt_rounds = process.env.SALT_ROUNDS;
 
 export class UserModel {
    async index(): Promise<Users[]> {
@@ -41,7 +41,7 @@ export class UserModel {
        try {
         const connect = await client.connect();
         const sql = "INSERT INTO users (firstName, lastName, password) VALUES($1, $2, $3) RETURNING *";
-        const hash = bcrypt.hashSync(u.password + pepper, parseInt(String(SALT_ROUNDS)));
+        const hash = bcrypt.hashSync(u.password + pepper, parseInt(String(salt_rounds)));
         const result = await connect.query(sql, [u.firstName, u.lastName, hash]);
         const user = result.rows[0];
         connect.release();
@@ -51,30 +51,30 @@ export class UserModel {
        }
    }
 
-   async update(user: Users): Promise<Users> {
-       try {
-        const connect = await client.connect();
-        const sql = "UPDATE users SET firstName = ($2), lastName = ($3), password = ($4) WHERE id=($1) RETURNING *";
-        const hash = bcrypt.hashSync(user.password + pepper, parseInt(String(SALT_ROUNDS)));
-        const result = await connect.query(sql, [user.firstName, user.lastName, hash]);
-        connect.release();
-        return result.rows[0];
-       } catch (err) {
-           throw new Error(`could't update user ${user.id}, ${err}`);
-       }
-   }
+//    async update(user: Users): Promise<Users> {
+//        try {
+//         const connect = await client.connect();
+//         const sql = "UPDATE users SET firstName = ($2), lastName = ($3), password = ($4) WHERE id=($1) RETURNING *";
+//         const hash = bcrypt.hashSync(user.password + pepper, parseInt(String(salt_rounds)));
+//         const result = await connect.query(sql, [user.firstName, user.lastName, hash]);
+//         connect.release();
+//         return result.rows[0];
+//        } catch (err) {
+//            throw new Error(`could't update user ${user.id}, ${err}`);
+//        }
+//    }
 
-   async delete(id:number): Promise<Users> {
-       try {
-           const connect = await client.connect();
-           const sql = "DELETE FROM users WHERE id=($1) RETURNING *";
-           const result = await connect.query(sql, [id]);
-           connect.release();
-           return result.rows[0];
-       } catch (err) {
-           throw new Error(`could't delete user ${id}, ${err}`);
-       }
-   }
+//    async delete(id:number): Promise<Users> {
+//        try {
+//            const connect = await client.connect();
+//            const sql = "DELETE FROM users WHERE id=($1) RETURNING *";
+//            const result = await connect.query(sql, [id]);
+//            connect.release();
+//            return result.rows[0];
+//        } catch (err) {
+//            throw new Error(`could't delete user ${id}, ${err}`);
+//        }
+//    }
 
    async authenticate(firstName:string, lastName:string, password:string): Promise<Users | null>{
        const connect = await client.connect();

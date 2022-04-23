@@ -53,50 +53,50 @@ const create = async (req: express.Request, res: express.Response) => {
     }
 }
 
-const update = async (req: express.Request, res: express.Response) => {
-      try {
-        const { id, firstName, lastName, password } = req.body;
-        if (id === undefined || firstName === undefined || lastName === undefined || password === undefined) {
-            return res.status(400).send("Missing/Invalid parameters, required: id, firstName, lastName, password"
-            );
-        }
-        Authorize(req, id);
-        const user: Users = {id, firstName, lastName, password};
-        const updated = await store.update(user);
-        res.send(updated);
-      } catch (err) {
-          const e = err as Error;
-          if (e.message.includes('failed update user')) {
-              res.status(500).json(e.message);
-          } else {
-              res.status(401).json(e.message);
-          }
-      }		
-};
+// const update = async (req: express.Request, res: express.Response) => {
+//       try {
+//         const { id, firstName, lastName, password } = req.body;
+//         if (id === undefined || firstName === undefined || lastName === undefined || password === undefined) {
+//             return res.status(400).send("Missing/Invalid parameters, required: id, firstName, lastName, password"
+//             );
+//         }
+//         Authorize(req, id);
+//         const user: Users = {id, firstName, lastName, password};
+//         const updated = await store.update(user);
+//         res.send(updated);
+//       } catch (err) {
+//           const e = err as Error;
+//           if (e.message.includes('failed update user')) {
+//               res.status(500).json(e.message);
+//           } else {
+//               res.status(401).json(e.message);
+//           }
+//       }		
+// };
 
 
-const destroy = async (req: express.Request, res: express.Response) => {
-	try{
-        const id = req.body.id;
-	    if (id === undefined) {
-		return res.status(400).send("Missing/Invalid parameters, required: id");
-	}
-    Authorize(req, id);
-    const deletedUser = await store.delete(id);
-    res.send(deletedUser);
-		if (deletedUser === undefined) {
-			res.status(404);
-			return res.json("User doesn't exist");
-        }
-	} catch (err) {
-        const e =err as Error;
-        if (e.message.includes("Could't delete user")) {
-            res.status(500).json(e.message);
-        } else {
-            res.status(401).json(e.message);
-        }
-    }
-};
+// const destroy = async (req: express.Request, res: express.Response) => {
+// 	try{
+//         const id = req.body.id;
+// 	    if (id === undefined) {
+// 		return res.status(400).send("Missing/Invalid parameters, required: id");
+// 	}
+//     Authorize(req, id);
+//     const deletedUser = await store.delete(id);
+//     res.send(deletedUser);
+// 		if (deletedUser === undefined) {
+// 			res.status(404);
+// 			return res.json("User doesn't exist");
+//         }
+// 	} catch (err) {
+//         const e =err as Error;
+//         if (e.message.includes("Could't delete user")) {
+//             res.status(500).json(e.message);
+//         } else {
+//             res.status(401).json(e.message);
+//         }
+//     }
+// };
 
 const authenticate = async (req: express.Request, res: express.Response) => {
 	const { firstName, lastName, password } = req.body;
@@ -122,9 +122,9 @@ const authenticate = async (req: express.Request, res: express.Response) => {
 const users_routes = (app: express.Application) => {
     app.get("/users", index);
     app.get("/users/:id", show);
-    app.put("/users", update);
+    // app.put("/users", update);
     app.post("/users", create);
-    app.delete("/users", destroy);
+    // app.delete("/users", destroy);
     app.post("/users/login", authenticate);
 };
 

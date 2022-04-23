@@ -7,7 +7,7 @@ export type Order = {
     user_id: string;
 };
 
-export class OrederStore{
+export class OrderStore{
     async index(): Promise<Order[]> {
         try{
             const connect = await client.connect();
