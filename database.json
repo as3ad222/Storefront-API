@@ -1,6 +1,5 @@
 {
 	"dev": {
-		
 		"host": { "ENV": "POSTGRES_HOST" },
 		"database": { "ENV": "POSTGRES_DB" },
 		"user": { "ENV": "POSTGRES_USER" },
