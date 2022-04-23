@@ -8,6 +8,8 @@
     "dev": "nodemon src/index.ts",
     "lint": "eslint src/*.ts",
     "lint-f": "eslint src/*.ts --fix",
+    "db:up": "db-migrate up",
+    "db:down": "db-migrate reset",
     "test": "db-migrate --env test reset && tsc && set ENV=test && db-migrate --env test up && jasmine"
   },
   "repository": {

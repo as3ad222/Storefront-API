@@ -1,12 +1,12 @@
 import express from 'express';
 import { Product, ProductStore } from "../models/products";
-import {Verify} from "../authorize/jwtAuh";
+import Authorize from "../authorize/jwtAuh";
 
 const store = new ProductStore();
 
 const index = async (req: express.Request, res: express.Response) => {
     try{
-        Verify(req);
+        Authorize(req);
         const product = await store.index();
         res.send(product);
     } catch(err){
@@ -25,7 +25,7 @@ const show = async (req: express.Request, res: express.Response) => {
         if (id === undefined) {
             return res.status(400).send("Missing parameters, id required");
         }
-        Verify(req , id);
+        Authorize(req);
         const product = await store.show(id);
         res.send(product);
     } catch (err) {
@@ -44,7 +44,7 @@ const create = async (req: express.Request, res: express.Response) => {
         if (name === undefined || price === undefined || category === undefined) {
             return res.status(400).send(" invalid parameters required : name, price, category");
         }
-        Verify(req);
+        Authorize(req);
         const product: Product = {name, price, category};
         const newProduct = await store.create(product);
         res.send(newProduct);
@@ -64,7 +64,7 @@ const update = async (req: express.Request, res: express.Response) => {
 	    if (id === undefined || name === undefined || price === undefined || category === undefined) {
 		return res.status(400).send("Invalid parameters, required: id, name, price, category");
 	    }
-        Verify(req);
+        Authorize(req);
         const product: Product = {name, price, category};
         const updated = await store.update(product);
         res.send (updated);
@@ -84,7 +84,7 @@ const destroy = async (req: express.Request, res: express.Response) => {
         if (id === undefined) {
         return res.status(400).send("Missing parameters required id");
         }
-        Verify(req);
+        Authorize(req);
         const deleteProduct = await store.delete(id);
         res.send(deleteProduct);
     } catch (err) {

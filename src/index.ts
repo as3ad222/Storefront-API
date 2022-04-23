@@ -6,6 +6,7 @@ import users_routes from "./handlers/users";
 const app = express();
 const port = process.env.PORT || 3000;
 
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.get('/', (req: express.Request, res: express.Response)=>{

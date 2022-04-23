@@ -9,7 +9,8 @@ export type Users = {
     password: string;
 };
 
-const { pepper, SALT_ROUNDS } = process.env;
+const pepper = process.env.BCRYPT_PASSWORD;
+const SALT_ROUNDS = process.env.SALT_ROUNDS;
 
 export class UserModel {
    async index(): Promise<Users[]> {
@@ -36,17 +37,17 @@ export class UserModel {
        }
    }
 
-   async create(_user: Users): Promise<Users> {
+   async create(u: Users): Promise<Users> {
        try {
         const connect = await client.connect();
         const sql = "INSERT INTO users (firstName, lastName, password) VALUES($1, $2, $3) RETURNING *";
-        const hash = bcrypt.hashSync(_user.password + pepper, parseInt(String(SALT_ROUNDS)));
-        const result = await connect.query(sql, [_user.firstName, _user.lastName, hash]);
+        const hash = bcrypt.hashSync(u.password + pepper, parseInt(String(SALT_ROUNDS)));
+        const result = await connect.query(sql, [u.firstName, u.lastName, hash]);
         const user = result.rows[0];
         connect.release();
         return user;
        } catch (err) {
-           throw new Error(`failed create user (${(_user.firstName, _user.lastName)}): ${err}`);
+           throw new Error(`failed create user (${(u.firstName, u.lastName)}): ${err}`);
        }
    }
 
