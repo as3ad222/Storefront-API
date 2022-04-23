@@ -11,7 +11,7 @@ export type Users = {
 
 const { pepper, SALT_ROUNDS } = process.env;
 
-export class User {
+export class UserModel {
    async index(): Promise<Users[]> {
        try {
            const connect = await client.connect();

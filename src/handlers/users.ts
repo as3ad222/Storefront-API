@@ -1,92 +1,135 @@
-import client from "../database";
-import bcrypt from "bcrypt";
+import express from 'express';
+import { Users, UserModel } from '../models/users';
+import {Verify, Sign} from '../authorize/jwtAuh';
 
+const store = new UserModel();
 
-export type Users = {
-    id?: number;
-    firstName: string;
-    lastName: string;
-    password: string;
+const index = async (req: express.Request, res: express.Response) => {
+    try {
+        Verify(req);
+        const users = await store.index();
+        res.send(users);
+     } catch (err) {
+         const e = err as Error;
+         if (e.message.includes("Invalid get user")){
+             res.status(500).json(e.message);
+         } else {
+             res.status(401).json(e.message);
+         }
+     }
 };
 
-const { pepper, SALT_ROUNDS } = process.env;
+const show = async (req: express.Request, res: express.Response) => {
+    try {
+        const id = parseInt(req.params.id);
+        if (id === undefined) {
+            return res.status(400).send("Missing or invalid parameters,  id required");
+        }
+        Verify(req, id);
+        const user = await store.show(id);
+        res.send(user);
+    } catch (err) {
+        const e = err as Error;
+        if (e.message.includes('Invalid to get user')){
+            res.status(500).json(e.message);
+        } else {
+            res.status(401).json(e.message);
+        }
+    }
+};
 
-export class User {
-   async index(): Promise<Users[]> {
-       try {
-           const connect = await client.connect();
-           const sql = "SELECT * FROM users";
-           const result = await connect.query(sql);
-           connect.release();
-           return result.rows;
-       } catch (err) {
-           throw new Error(`not get any user ${err}`);
-       }
-   }
+const create = async (req: express.Request, res: express.Response) => {
+    try {
+      const { firstName, lastName, password } = req.body;
+      if (firstName === undefined || lastName === undefined|| password === undefined) {
+        return res.status(400).send('Error, missing parameters. firstName, lastName, password required');
+      }
+      const user: Users = { firstName, lastName, password };
+      const newUser = await store.create(user);
+      const token = Sign( Number(newUser.id));
+      res.send(token);
+    } catch (error) {
+      const e = error as Error;
+      if (e.message.includes('Failed to add the user')) {
+        res.status(500).json(e.message);
+      } else {
+        res.status(401).json(e.message);
+      }
+    }
+  };
+  
 
-   async show(id: number): Promise<Users> {
-       try {
-        const connect = await client.connect();
-        const sql = "SELECT * FROM users WHERE id=($1)";
-        const result = await connect.query(sql, [id]);
-        connect.release();
-        return result.rows[0];
-       } catch (err) {
-           throw new Error(`not get this user ${id}, ${err}`);
-       }
-   }
+  const update = async (req: express.Request, res: express.Response) => {
+      try {
+        const { id, firstName, lastName, password } = req.body;
+        if (id === undefined || firstName === undefined || lastName === undefined || password === undefined) {
+            return res.status(400).send("Missing/Invalid parameters, required: id, firstName, lastName, password"
+            );
+        }
+        Verify(req, id);
+        const user: Users = {id, firstName, lastName, password};
+        const updated = await store.update(user);
+        res.send(updated);
+      } catch (err) {
+          const e = err as Error;
+          if (e.message.includes('failed update user')) {
+              res.status(500).json(e.message);
+          } else {
+              res.status(401).json(e.message);
+          }
+      }		
+};
 
-   async create(_user: Users): Promise<Users> {
-       try {
-        const connect = await client.connect();
-        const sql = "INSERT INTO users (firstName, lastName, password) VALUES($1, $2, $3) RETURNING *";
-        const hash = bcrypt.hashSync(_user.password + pepper, parseInt(String(SALT_ROUNDS)));
-        const result = await connect.query(sql, [_user.firstName, _user.lastName, hash]);
-        const user = result.rows[0];
-        connect.release();
-        return user;
-       } catch (err) {
-           throw new Error(`failed create user (${(_user.firstName, _user.lastName)}): ${err}`);
-       }
-   }
+const destroy = async (req: express.Request, res: express.Response) => {
+	try{
+        const id = req.body.id;
+	    if (id === undefined) {
+		return res.status(400).send("Missing/Invalid parameters, required: id");
+	}
+    Verify(req, id);
+    const deletedUser = await store.delete(id);
+    res.send(deletedUser);
+		if (deletedUser === undefined) {
+			res.status(404);
+			return res.json("User doesn't exist");
+        }
+	} catch (err) {
+        const e =err as Error;
+        if (e.message.includes("Could't delete user")) {
+            res.status(500).json(e.message);
+        } else {
+            res.status(401).json(e.message);
+        }
+    }
+};
 
-   async update(user: Users): Promise<Users> {
-       try {
-        const connect = await client.connect();
-        const sql = "UPDATE users SET firstName = ($2), lastName = ($3), password = ($4) WHERE id=($1) RETURNING *";
-        const hash = bcrypt.hashSync(user.password + pepper, parseInt(String(SALT_ROUNDS)));
-        const result = await connect.query(sql, [user.firstName, user.lastName, hash]);
-        connect.release();
-        return result.rows[0];
-       } catch (err) {
-           throw new Error(`could't update user ${user.id}, ${err}`);
-       }
-   }
+const authenticate = async (req: express.Request, res: express.Response) => {
+	const { firstName, lastName, password } = req.body;
+	if (firstName === undefined || lastName === undefined || password === undefined) {
+		return res.status(400).send("Missing/Invalid parameters, required: firstName, lastName, password");
+	}
+	const user: Users = { firstName, lastName, password };
+	try {
+		const u = await store.authenticate(user.firstName, user.lastName, user.password);
+		if (u === null) {
+			return res.status(401).json("Incorrect user information");
+		} else {
+			const token = Sign(Number(user.id));
+			res.json(token);
+		}
+	} catch (err) {
+        const e = err as Error;
+        return res.status(401).json(e.message);
+	}
+};
 
-   async delete(id:number): Promise<Users> {
-       try {
-           const connect = await client.connect();
-           const sql = "DELETE FROM users WHERE id=($1) RETURNING *";
-           const result = await connect.query(sql, [id]);
-           connect.release();
-           return result.rows[0];
-       } catch (err) {
-           throw new Error(`could't delete user ${id}, ${err}`);
-       }
-   }
+const users_routes = (app: express.Application) => {
+    app.get("/users", index);
+    app.get("/users/:id", show);
+    app.put("/users", update);
+    app.post("/users", create);
+    app.delete("/users", destroy);
+    app.post("/users/login", authenticate);
+};
 
-   async authenticate(firstName:string, lastName:string, password:string): Promise<Users | null>{
-       const connect = await client.connect();
-       const sql = "SELECT * FROM users WHERE firstName=$(1) AND lastName=$(2)";
-       const result = await connect.query(sql, [firstName, lastName]);
-       if (result.rows.length){
-           const user = result.rows[0];
-           if(bcrypt.compareSync(password + pepper, user.password)){
-               return user;
-           }
-       }
-       return null;
-   }
-}
-
-
+export default users_routes; 
