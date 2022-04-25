@@ -6,7 +6,7 @@ import{Users} from "../../models/users";
 const request = supertest(app);
 
 describe("Test Endpoint /users", () => {
-	const user: Users = { firstName: "Asaad", lastName: "Mohammed", password: "Pass" };
+	const user: Users = { firstname: "Asaad", lastname: "Mohammed", password: "pass" };
 	let token: string;
 	let userId: string;
 	it("Testing the create endpoint", async () => {
@@ -39,20 +39,5 @@ describe("Test Endpoint /users", () => {
 
 	it("Test read endpoint with invalid token and invalid user ID", async () => {
 		await request.get("/users/999").set("Authorization", "Bearer faketoken").expect(401);
-	});
-
-	it("Test update endpoint with different user ID", async () => {
-		await request
-			.put("/users")
-			.set("Authorization", `Bearer ${token}`)
-			.send({ id: 999, firstName: user.firstName, lastName: user.lastName, password: user.password })
-			.expect(401);
-	});
-
-	it("Testing the delete endpoint with valid token and invalid user ID", async () => {
-		await request.delete("/users").set("Authorization", "Bearer faketoken").send({ id: 999 }).expect(401);
-	});
-	it("Testing the delete endpoint with valid token and valid user ID", async () => {
-		await request.delete("/users").set("Authorization", `Bearer ${token}`).send({ id: userId }).expect(200);
 	});
 });

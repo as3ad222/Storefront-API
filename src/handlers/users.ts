@@ -37,15 +37,15 @@ const show = async (req: express.Request, res: express.Response) => {
 };
 
 const create = async (req: express.Request, res: express.Response) => {
-	const { firstName, lastName, password } = req.body;
-	if (firstName === undefined || lastName === undefined || password === undefined) {
+	const { firstname, lastname, password } = req.body;
+	if (firstname === undefined || lastname === undefined || password === undefined) {
 		res.status(400);
-		return res.send("Missing/Invalid parameters, the following parameter are required: firstName, lastName, password");
+		return res.send("Missing/Invalid parameters, the following parameter are required: firstname, lastname, password");
 	}
-	const user: Users = { firstName, lastName, password };
+	const user: Users = { firstname, lastname, password };
 	try {
 		const newUser = await store.create(user);
-		const token = sign({ user: { id: newUser.id, firstName, lastName } }, process.env.TOKEN_SECRET as string);
+		const token = sign({ user: { id: newUser.id, firstname, lastname } }, process.env.TOKEN_SECRET as string);
 		res.json(token);
 	} catch (err) {
 		res.status(400);
@@ -53,63 +53,20 @@ const create = async (req: express.Request, res: express.Response) => {
     }
 }
 
-// const update = async (req: express.Request, res: express.Response) => {
-//       try {
-//         const { id, firstName, lastName, password } = req.body;
-//         if (id === undefined || firstName === undefined || lastName === undefined || password === undefined) {
-//             return res.status(400).send("Missing/Invalid parameters, required: id, firstName, lastName, password"
-//             );
-//         }
-//         Authorize(req, id);
-//         const user: Users = {id, firstName, lastName, password};
-//         const updated = await store.update(user);
-//         res.send(updated);
-//       } catch (err) {
-//           const e = err as Error;
-//           if (e.message.includes('failed update user')) {
-//               res.status(500).json(e.message);
-//           } else {
-//               res.status(401).json(e.message);
-//           }
-//       }		
-// };
 
-
-// const destroy = async (req: express.Request, res: express.Response) => {
-// 	try{
-//         const id = req.body.id;
-// 	    if (id === undefined) {
-// 		return res.status(400).send("Missing/Invalid parameters, required: id");
-// 	}
-//     Authorize(req, id);
-//     const deletedUser = await store.delete(id);
-//     res.send(deletedUser);
-// 		if (deletedUser === undefined) {
-// 			res.status(404);
-// 			return res.json("User doesn't exist");
-//         }
-// 	} catch (err) {
-//         const e =err as Error;
-//         if (e.message.includes("Could't delete user")) {
-//             res.status(500).json(e.message);
-//         } else {
-//             res.status(401).json(e.message);
-//         }
-//     }
-// };
 
 const authenticate = async (req: express.Request, res: express.Response) => {
-	const { firstName, lastName, password } = req.body;
-	if (firstName === undefined || lastName === undefined || password === undefined) {
+	const { firstname, lastname, password } = req.body;
+	if (firstname === undefined || lastname === undefined || password === undefined) {
 		return res.status(400).send("Missing/Invalid parameters, required: firstName, lastName, password");
 	}
-	const user: Users = { firstName, lastName, password };
+	const user: Users = { firstname, lastname, password };
 	try {
-		const u = await store.authenticate(user.firstName, user.lastName, user.password);
+		const u = await store.authenticate(user.firstname, user.lastname, user.password);
 		if (u === null) {
 			return res.status(401).json("Incorrect user information");
 		} else {
-			const token = sign({user: {id: u.id, firstName, lastName}}, process.env.TOKEN_SECRET as string);
+			const token = sign({user: {id: u.id, firstname, lastname}}, process.env.TOKEN_SECRET as string);
 			res.json(token);
 		}
 	} catch (err) {
@@ -122,9 +79,7 @@ const authenticate = async (req: express.Request, res: express.Response) => {
 const users_routes = (app: express.Application) => {
     app.get("/users", index);
     app.get("/users/:id", show);
-    // app.put("/users", update);
     app.post("/users", create);
-    // app.delete("/users", destroy);
     app.post("/users/login", authenticate);
 };
 

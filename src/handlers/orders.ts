@@ -4,20 +4,9 @@ import Authorize from "../authorize/jwtAuh";
 
 const store = new OrderStore();
 
-const index = async (req: express.Request, res: express.Response) => {
-    try{
-        Authorize(req);
-        const orders = await store.index();
-        res.send(orders);
-    } catch (err) {
-        const e = err as Error;
-        if (e.message.includes("Invalid get Order")) {
-            res.status(500).json(e.message);
-        } else {
-            res.status(401).json(e.message);
-        }
-    }
-    
+const index = async (_req: express.Request, res: express.Response) => {
+	const orders = await store.index();
+	res.json(orders);
 };
 
 const show = async (req: express.Request, res: express.Response) => {
@@ -52,26 +41,6 @@ const create = async (req: express.Request, res: express.Response) => {
     } catch (err) {
         const e = err as Error;
         if (e.message.includes("Invalid to add order")) {
-            res.status(500).json(e.message);
-        } else {
-            res.status(401).json(e.message);
-        }
-    }
-};
-
-const update = async (req: express.Request, res: express.Response) => {
-    try {
-        const {id, status, user_id} = req.body;
-        if (id === undefined || status === undefined || user_id === undefined){
-            return res.status(400).send(" Missing parameters required id, status, user_id");
-        }
-        Authorize(req, user_id);
-        const order: Order = {id, status, user_id};
-        const update = await store.update(order);
-        res.send(update);
-    } catch (err) {
-        const e = err as Error;
-        if (e.message.includes("Invalid to put order")) {
             res.status(500).json(e.message);
         } else {
             res.status(401).json(e.message);
@@ -122,7 +91,6 @@ const destroy = async (req: express.Request, res: express.Response) => {
 const order_routes = (app: express.Application) => {
     app.get("/orders", index);
     app.get("/orders/:id", show);
-    app.put("/orders", update);
     app.post("/orders", create);
     app.delete("/orders", destroy);
     app.post("/orders/:id/products", addProduct);

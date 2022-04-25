@@ -43,28 +43,4 @@ export class ProductStore {
             throw new Error(`Could not create to products ${product}, ${err}`);
         }
     }
-
-    // async update(product:Product): Promise<Product> {
-    //     try{
-    //         const connect = await client.connect();
-    //         const sql = "UPDATE products SET name=($2), price=($3), category=($4) WHERE id=($1) RETURNING *";
-    //         const result = await connect.query(sql, [product.id, product.name, product.price, product.category]);
-    //         connect.release();
-    //         return result.rows[0];
-    //     } catch(err){
-    //         throw new Error(`Could not update products ${product.id}, ${err}`);
-    //     }
-    // }
-
-    // async delete(id: number): Promise<Product> {
-    //     try{
-    //         const connect = await client.connect();
-    //         const sql = "DELETE FROM products WHERE id=($1) RETURNING *";
-    //         const result = await connect.query(sql, [id]);
-    //         connect.release();
-    //         return result.rows[0];
-    //     } catch(err){
-    //         throw new Error(`Could not delete ${id}, ${err}`);
-    //     }
-    // }
 }

@@ -48,18 +48,6 @@ export class OrderStore{
         }
     }
 
-    async update(order: Order): Promise<Order> {
-        try {
-            const connect = await client.connect();
-            const sql = "UPDATE order SET status=($2) WHERE id=($1) RETURNING *";
-            const result = await connect.query(sql, [order.id, order.status]);
-            connect.release();
-            return result.rows[0];
-        } catch (err) {
-            throw new Error(`Could't update product ${order.id}, ${err}`);
-        }
-    }
-
     async addProduct(quantity: number, orderId: string, productId: string): Promise<Order> {
         try {
             const connect = await client.connect();
@@ -72,14 +60,14 @@ export class OrderStore{
         }
     }
 
-        async delete(id: number): Promise<Order> {
-            try{
-                const connect = await client.connect();
-                const sql = "DELETE from orders WHERE id =($1) RETURNING *";
-                const result = await connect.query(sql, [id]);
-                connect.release();
-                return result.rows[0];
-            } catch (err) {
+    async delete(id: number): Promise<Order> {
+        try{
+            const connect = await client.connect();
+            const sql = "DELETE from orders WHERE id =($1) RETURNING *";
+            const result = await connect.query(sql, [id]);
+            connect.release();
+            return result.rows[0];
+        } catch (err) {
                 throw new Error(`Could't delete order ${id}, ${err}`);
             }
         

@@ -10,7 +10,7 @@ describe("Testing Endpoint: /products", () => {
 	let productId: string;
 	let token: string;
 	beforeAll(async () => {
-		const user: Users = { firstName: "Asaad", lastName: "Mohammed", password: "Pass" };
+		const user: Users = { firstname: "Asaad", lastname: "Mohammed", password: "pass" };
 		await request
 			.post("/users")
 			.send(user)
@@ -26,9 +26,5 @@ describe("Testing Endpoint: /products", () => {
 
 	it("Testing the read endpoint with invalid product ID", async () => {
 		await request.get("/products/999").set("Authorization", `Bearer ${token}`).expect(404);
-	});
-
-    it("Testing the delete endpoint with valid token and invalid Product ID", async () => {
-		await request.delete("/products").set("Authorization", "Bearer faketoken").send({ id: 999 }).expect(401);
 	});
 });

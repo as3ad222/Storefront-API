@@ -16,8 +16,6 @@ These are the notes from a meeting with the frontend developer that describe wha
 | ---------------- | ---------- | ------------------------------------- | -------------- | ------------------- |
 | **/users**       | **GET**    | **N/A**                               | **True** \*    | **List Users**      |
 | **/users**       | **POST**   | **firstname, lastname, password**     | **False**      | **Create User**     |
-| **/users**       | **PUT**    | **id, firstname, lastname, password** | **True** \*    | **Update User**     |
-| **/users**       | **DELETE** | **id**                                | **True** \*    | **Delete User**     |
 | **/users/:id**   | **GET**    | **id**                                | **True** \*    | **Load user by Id** |
 | **/users/login** | **POST**   | **firstname, lastname, password**     | **False**      | **Logs user in**    |
 
@@ -27,8 +25,6 @@ These are the notes from a meeting with the frontend developer that describe wha
 | ----------------- | ---------- | ----------------------------- | -------------- | ---------------------- |
 | **/products**     | **GET**    | **N/A**                       | **False**      | **List products**      |
 | **/products**     | **POST**   | **name, price, category**     | **True** \*    | **Create product**     |
-| **/products**     | **PUT**    | **id, name, price, category** | **True** \*    | **Update product**     |
-| **/products**     | **DELETE** | **id**                        | **True** \*    | **Delete product**     |
 | **/products/:id** | **GET**    | **id**                        | **False**      | **Load product by Id** |
 
 #### Orders:
