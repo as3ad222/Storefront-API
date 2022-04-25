@@ -38,14 +38,6 @@ These are the notes from a meeting with the frontend developer that describe wha
 | **/orders/:id**        | **GET**    | **id**                       | **False**      | **Load order by Id**     |
 | **/orders/:id/products** | **POST**   | **id, product_id, quantity** | **True** \*    | **Add product to order** |
 
-#### Special Routes:
-
-| Endpoint                  | Request  | Parameters   | Requires Token | Usage                                              |
-| ------------------------- | -------- | ------------ | -------------- | -------------------------------------------------- |
-| **/orders/current**       | **POST** | **user_id**  | **True** \*    | **List user open orders**                          |
-| **/orders/completed**     | **POST** | **user_id**  | **True** \*    | **List user completed orders**                     |
-| **/products/by_category** | **POST** | **category** | **False**      | **List products by category**                      |
-
 #### \* A valid JWT token can be obtained by either signing in as a user or creating a new user.
 
 ## Database Schema
